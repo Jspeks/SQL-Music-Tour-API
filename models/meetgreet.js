@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   MeetGreet.init({
-    meet_greet_id: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true

@@ -1,7 +1,7 @@
 // DEPENDENCIES
 const bands = require('express').Router()
 const db = require('../models')
-const { Band } = db 
+const { Band, MeetGreet, Event, SetTime } = db 
 const { Op } = require('sequelize')
 
 // FIND ALL BANDS
@@ -21,6 +21,7 @@ bands.get('/', async (req, res) => {
 
 // FIND A SPECIFIC BAND
 bands.get('/:name', async (req, res) => {
+    console.log('ABOUT TO DO ALL THE INCLUDE STUFF!!')
     try {
         const foundBand = await Band.findOne({
             where: { name: req.params.name },
@@ -28,31 +29,33 @@ bands.get('/:name', async (req, res) => {
                 { 
                     model: MeetGreet, 
                     as: "meet_greets", 
-                    attributes: { exclude: ["band_id", "event_id"] },
-                    include: { 
-                        model: Event, 
-                        as: "event", 
-                        where: { name: { [Op.like]: `%${req.query.event ? req.query.event : ''}%` } } 
-                    }
+                //    attributes: { exclude: ["band_id", "event_id"] },
+                //     include: { 
+                //         model: Event, 
+                //         as: "event", 
+                //         where: { name: { [Op.like]: `%${req.query.event ? req.query.event : ''}%` } } 
+                //     }
                 },
-                { 
-                    model: SetTime, 
-                    as: "set_times",
-                    attributes: { exclude: ["band_id", "event_id"] },
-                    include: { 
-                        model: Event, 
-                        as: "event", 
-                        where: { name: { [Op.like]: `%${req.query.event ? req.query.event : ''}%` } } 
-                    }
-                }
+                // { 
+                //     model: SetTime, 
+                //     as: "set_times",
+                //     attributes: { exclude: ["band_id", "event_id"] },
+                //     include: { 
+                //         model: Event, 
+                //         as: "event", 
+                //         where: { name: { [Op.like]: `%${req.query.event ? req.query.event : ''}%` } } 
+                //     }
+                // }
             ],
-            order: [
-                [{ model: MeetGreet, as: "meet_greets" }, { model: Event, as: "event" }, 'date', 'DESC'],
-                [{ model: SetTime, as: "set_times" }, { model: Event, as: "event" }, 'date', 'DESC']
-            ]
+            // order: [
+            //     [{ model: MeetGreet, as: "meet_greets" }, { model: Event, as: "event" }, 'date', 'DESC'],
+            //     [{ model: SetTime, as: "set_times" }, { model: Event, as: "event" }, 'date', 'DESC']
+            // ]
         })
+        console.log('Found band', foundBand)
         res.status(200).json(foundBand)
     } catch (error) {
+        console.log('ERRR!', error)
         res.status(500).json(error)
     }
 })
